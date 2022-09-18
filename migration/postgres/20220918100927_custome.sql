@@ -1,8 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 SELECT 'up SQL query';
-
-create table brand (id serial, name varchar, PRIMARY key(id));
+create table customer (id serial, name varchar,email VARCHAR,password VARCHAR, PRIMARY KEY(id));
 -- +goose StatementEnd
 
 -- +goose Down
