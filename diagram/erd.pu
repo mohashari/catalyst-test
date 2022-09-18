@@ -1,0 +1,49 @@
+@startuml
+
+entity Customer  {
+  + id (PK)
+  --
+  name
+  mail
+  password
+}
+
+entity Order  {
+  + id (PK)
+  --
+  # customer id (FK)
+  order date
+  amount
+}
+
+entity "Order Detail" as OrderDetail {
+  + id (PK)
+  --
+  # order id  (FK)
+  # product id (FK)
+  amount
+  quantity
+}
+
+entity Brand {
+  + id (PK)
+  --
+  name
+}
+
+entity Product {
+  + id (PK)
+  --
+  # brand id (FK)
+  name
+  price
+  quantity
+}
+
+Customer -right-o{ Order
+Order ||-right-|{ OrderDetail
+Brand ||-right-|{ Product
+OrderDetail }|-down-|{ Product
+
+
+@enduml

@@ -1,0 +1,14 @@
+version: '3.5'
+services:
+  postgres:
+    container_name: catalyst-db
+    image: postgres
+    environment:
+      POSTGRES_USER: catalyst
+      POSTGRES_PASSWORD: catalyst
+      TZ: 'Asia/Jakarta'
+      PGTZ: 'Asia/Jakarta'
+    volumes:
+       - ./datapg:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
