@@ -44,6 +44,9 @@ func NewPostgres(p *ConnParam) (*repository.Repository, error) {
 		BrandRepo: &brand{
 			db: db,
 		},
+		ProductRepo: &product{
+			db: db,
+		},
 	}, nil
 }
 
