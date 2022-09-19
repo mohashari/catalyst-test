@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	_ "github.com/lib/pq"
 	"github.com/mohashari/catalyst-test/repository"
 )
 
@@ -29,7 +30,7 @@ type postgres struct {
 func NewPostgres(p *ConnParam) (*repository.Repository, error) {
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s%s", p.User, p.Pass, p.Host, p.Port, p.DBName, p.Options)
 
-	db, err := sql.Open("pgx", dsn)
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("db open: %v", err)
 	}
@@ -38,6 +39,9 @@ func NewPostgres(p *ConnParam) (*repository.Repository, error) {
 	db.SetConnMaxLifetime(p.MaxLifetime)
 	return &repository.Repository{
 		Closer: &postgres{
+			db: db,
+		},
+		BrandRepo: &brand{
 			db: db,
 		},
 	}, nil
