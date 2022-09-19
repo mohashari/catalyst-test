@@ -24,7 +24,7 @@ func (b *BrandRequest) Valid() error {
 func (s *service) CreateBrand(ctx context.Context, req BrandRequest) (resp DefaultResponse, err error) {
 
 	if err := req.Valid(); err != nil {
-		log.Fatal("level ", "err ", "method ", "validate ", "message ", err)
+		log.Println("level ", "err ", "method ", "validate ", "message ", err.Error())
 		return DefaultResponse{}, err
 	}
 

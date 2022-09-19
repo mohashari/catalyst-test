@@ -16,7 +16,6 @@ type ErrorResp struct {
 
 //Router ...
 func Router(ctx context.Context, r *http.ServeMux, svc service.Service) *http.ServeMux {
-
 	
 	r.HandleFunc("/brand", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodPost {
