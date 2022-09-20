@@ -40,6 +40,31 @@ func Router(ctx context.Context, r *http.ServeMux, svc service.Service) *http.Se
 		}
 	})
 
+	r.HandleFunc("/product/brand", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		if r.Method == http.MethodGet {
+			query := r.URL.Query()
+			brandID, present := query["id"]
+			if !present || len(brandID) == 0 {
+				w.WriteHeader(http.StatusBadRequest)
+				json.NewEncoder(w).Encode(ErrorResp{Message: "id required"})
+				return
+			}
+
+			id, _ := strconv.Atoi(brandID[0])
+
+			resp, err := svc.GetProductByBrandID(ctx, int64(id))
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				json.NewEncoder(w).Encode(ErrorResp{Message: err.Error()})
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(resp)
+			return
+		}
+	})
+
 	r.HandleFunc("/product", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		switch r.Method {

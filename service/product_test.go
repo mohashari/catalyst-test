@@ -210,3 +210,79 @@ func Test_service_GetProductByID(t *testing.T) {
 		})
 	}
 }
+
+func Test_service_GetProductByBrandID(t *testing.T) {
+	type fields struct {
+		repo *repository.Repository
+	}
+	type args struct {
+		ctx context.Context
+		id  int64
+	}
+
+	ctx := context.Background()
+	var products []model.Product
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockProduct := mock.NewMockProductRepo(ctrl)
+	mockProduct.EXPECT().GetByBrandID(ctx, int64(1)).Return(products, nil)
+	mockProduct.EXPECT().GetByBrandID(ctx, int64(1)).Return(products, sql.ErrNoRows)
+
+	tests := []struct {
+		name     string
+		fields   fields
+		args     args
+		wantResp DefaultResponse
+		wantErr  bool
+	}{
+		{
+			name: "Test_service_GetProductByBrandID positif case",
+			fields: fields{
+				repo: &repository.Repository{
+					ProductRepo: mockProduct,
+				},
+			},
+			args: args{
+				ctx: ctx,
+				id:  1,
+			},
+			wantResp: DefaultResponse{
+				Message: success,
+				Data:    products,
+			},
+			wantErr: false,
+		},
+
+		{
+			name: "Test_service_GetProductByBrandID error get product",
+			fields: fields{
+				repo: &repository.Repository{
+					ProductRepo: mockProduct,
+				},
+			},
+			args: args{
+				ctx: ctx,
+				id:  1,
+			},
+			wantResp: DefaultResponse{},
+			wantErr:  true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &service{
+				repo: tt.fields.repo,
+			}
+			gotResp, err := s.GetProductByBrandID(tt.args.ctx, tt.args.id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("service.GetProductByBrandID() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotResp, tt.wantResp) {
+				t.Errorf("service.GetProductByBrandID() = %v, want %v", gotResp, tt.wantResp)
+			}
+		})
+	}
+}

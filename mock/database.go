@@ -157,6 +157,21 @@ func (m *MockProductRepo) EXPECT() *MockProductRepoMockRecorder {
 	return m.recorder
 }
 
+// GetByBrandID mocks base method.
+func (m *MockProductRepo) GetByBrandID(ctx context.Context, id int64) ([]model.Product, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByBrandID", ctx, id)
+	ret0, _ := ret[0].([]model.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByBrandID indicates an expected call of GetByBrandID.
+func (mr *MockProductRepoMockRecorder) GetByBrandID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByBrandID", reflect.TypeOf((*MockProductRepo)(nil).GetByBrandID), ctx, id)
+}
+
 // GetByID mocks base method.
 func (m *MockProductRepo) GetByID(ctx context.Context, id int64) (model.Product, error) {
 	m.ctrl.T.Helper()

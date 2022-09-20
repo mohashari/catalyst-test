@@ -88,3 +88,23 @@ func (s *service) GetProductByID(ctx context.Context, id int64) (resp DefaultRes
 		Data:    product,
 	}, nil
 }
+
+func (s *service) GetProductByBrandID(ctx context.Context, id int64) (resp DefaultResponse, err error) {
+
+	if id <= 0 {
+		err = fmt.Errorf("id required")
+		log.Println("level: ", "err ", "method: ", "validation get product by brand ", "message: ", err.Error())
+		return resp, err
+	}
+
+	products, err := s.repo.ProductRepo.GetByBrandID(ctx, id)
+	if err != nil {
+		log.Println("level: ", "err ", "method: ", "get product by brand ", "message: ", err.Error())
+		return resp, err
+	}
+
+	return DefaultResponse{
+		Message: success,
+		Data:    products,
+	}, nil
+}
