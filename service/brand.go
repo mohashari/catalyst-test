@@ -37,7 +37,7 @@ func (s *service) CreateBrand(ctx context.Context, req BrandRequest) (resp Defau
 	}
 
 	return DefaultResponse{
-		Message: "success",
+		Message: success,
 		Data:    id,
 	}, nil
 }

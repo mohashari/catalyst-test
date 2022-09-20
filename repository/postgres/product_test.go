@@ -28,7 +28,7 @@ func Test_product_Insert(t *testing.T) {
 			prd.Brand.ID,
 			prd.Name,
 			prd.Price,
-			prd.Quality,
+			prd.Quantity,
 		).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
@@ -37,7 +37,7 @@ func Test_product_Insert(t *testing.T) {
 			prd.Brand.ID,
 			prd.Name,
 			prd.Price,
-			prd.Quality,
+			prd.Quantity,
 		).
 		WillReturnError(sql.ErrConnDone)
 
