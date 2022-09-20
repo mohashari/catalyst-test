@@ -18,6 +18,7 @@ type service struct {
 type Service interface {
 	CreateBrand(ctx context.Context, req BrandRequest) (resp DefaultResponse, err error)
 	CreateProduct(ctx context.Context, req ProductCreateReq) (resp DefaultResponse, err error)
+	GetProductByID(ctx context.Context, id int64) (resp DefaultResponse, err error)
 }
 
 //NewService ...
