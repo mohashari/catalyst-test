@@ -166,3 +166,82 @@ func Test_product_GetByID(t *testing.T) {
 		})
 	}
 }
+
+func Test_product_GetByBrandID(t *testing.T) {
+	type fields struct {
+		db *sql.DB
+		mu sync.RWMutex
+	}
+	type args struct {
+		ctx context.Context
+		id  int64
+	}
+
+	db, dbmock, _ := sqlmock.New()
+
+	var products []model.Product
+
+	productModel := model.Product{}
+	query := `SELECT p.id,p.name,p.price,p.quantity,b.id,b.name FROM product p RIGHT join brand b on b.id = p.brand_id where b.id= $1`
+
+	dbmock.ExpectQuery(regexp.QuoteMeta(query)).
+		WithArgs(1).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "price", "quantity", "id", "name"}).
+			AddRow(productModel.ID, productModel.Name, productModel.Price, productModel.Quantity,
+				productModel.Brand.ID, productModel.Brand.Name))
+
+	dbmock.ExpectQuery(regexp.QuoteMeta(query)).
+		WithArgs(1).
+		WillReturnError(sql.ErrNoRows)
+
+	tests := []struct {
+		name         string
+		fields       fields
+		args         args
+		wantProducts []model.Product
+		wantErr      bool
+	}{
+		{
+			name: "Test_product_GetByBrandID positif case",
+			fields: fields{
+				db: db,
+			},
+			args: args{
+				ctx: context.Background(),
+				id:  1,
+			},
+			wantProducts: []model.Product{
+				model.Product{},
+			},
+			wantErr: false,
+		},
+		{
+			name: "Test_product_GetByBrandID error no rows",
+			fields: fields{
+				db: db,
+			},
+			args: args{
+				ctx: context.Background(),
+				id:  1,
+			},
+			wantProducts: products,
+			wantErr:      true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := &product{
+				db: tt.fields.db,
+				mu: tt.fields.mu,
+			}
+			gotProducts, err := p.GetByBrandID(tt.args.ctx, tt.args.id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("product.GetByBrandID() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotProducts, tt.wantProducts) {
+				t.Errorf("product.GetByBrandID() = %v, want %v", len(gotProducts), len(tt.wantProducts))
+			}
+		})
+	}
+}

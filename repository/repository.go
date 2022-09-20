@@ -39,4 +39,5 @@ type OrderRepo interface {
 type ProductRepo interface {
 	Insert(ctx context.Context, model model.Product) (id int64, err error)
 	GetByID(ctx context.Context, id int64) (product model.Product, err error)
+	GetByBrandID(ctx context.Context, id int64) (products []model.Product, err error)
 }

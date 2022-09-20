@@ -48,3 +48,34 @@ func (p *product) GetByID(ctx context.Context, id int64) (product model.Product,
 	}
 	return product, nil
 }
+
+func (p *product) GetByBrandID(ctx context.Context, id int64) (products []model.Product, err error) {
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	query := `SELECT p.id,p.name,p.price,p.quantity,b.id,b.name FROM product p RIGHT join brand b on b.id = p.brand_id where b.id= $1`
+	rows, err := p.db.QueryContext(ctx, query, id)
+
+	if err != nil {
+		return products, err
+	}
+
+	for rows.Next() {
+		var product model.Product
+		if err := rows.Scan(
+			&product.ID,
+			&product.Name,
+			&product.Price,
+			&product.Quantity,
+			&product.Brand.ID,
+			&product.Brand.Name,
+		); err != nil {
+			return products, err
+		}
+
+		products = append(products, product)
+	}
+
+	return products, nil
+}
