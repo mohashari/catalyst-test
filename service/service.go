@@ -6,6 +6,10 @@ import (
 	"github.com/mohashari/catalyst-test/repository"
 )
 
+const (
+	success = "success"
+)
+
 type service struct {
 	repo *repository.Repository
 }
@@ -13,6 +17,7 @@ type service struct {
 //Service ...
 type Service interface {
 	CreateBrand(ctx context.Context, req BrandRequest) (resp DefaultResponse, err error)
+	CreateProduct(ctx context.Context, req ProductCreateReq) (resp DefaultResponse, err error)
 }
 
 //NewService ...

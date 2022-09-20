@@ -24,7 +24,7 @@ func (p *product) Insert(ctx context.Context, model model.Product) (id int64, er
 		model.Brand.ID,
 		model.Name,
 		model.Price,
-		model.Quality,
+		model.Quantity,
 	).Scan(&id); err != nil {
 		return id, err
 	}
