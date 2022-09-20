@@ -13,8 +13,8 @@ type BrandRequest struct {
 	Name string `json:"name" validate:"required"`
 }
 
-//Valid ...
-func (b *BrandRequest) Valid() error {
+//valid ...
+func (b *BrandRequest) valid() error {
 	if b.Name == "" {
 		return fmt.Errorf("name required")
 	}
@@ -23,7 +23,7 @@ func (b *BrandRequest) Valid() error {
 
 func (s *service) CreateBrand(ctx context.Context, req BrandRequest) (resp DefaultResponse, err error) {
 
-	if err := req.Valid(); err != nil {
+	if err := req.valid(); err != nil {
 		log.Println("level ", "err ", "method ", "validate ", "message ", err.Error())
 		return DefaultResponse{}, err
 	}

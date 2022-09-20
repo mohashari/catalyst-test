@@ -119,3 +119,94 @@ func Test_service_CreateProduct(t *testing.T) {
 		})
 	}
 }
+
+func Test_service_GetProductByID(t *testing.T) {
+	type fields struct {
+		repo *repository.Repository
+	}
+	type args struct {
+		ctx context.Context
+		id  int64
+	}
+
+	ctx := context.Background()
+	brandModel := model.Brand{
+		ID:   1,
+		Name: "cata",
+	}
+	productModel := model.Product{
+		ID:       1,
+		Brand:    brandModel,
+		Name:     "mouse",
+		Price:    10000,
+		Quantity: 10,
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockProduct := mock.NewMockProductRepo(ctrl)
+	mockProduct.EXPECT().GetByID(ctx, int64(1)).Return(productModel, nil)
+	mockProduct.EXPECT().GetByID(ctx, int64(1)).Return(model.Product{}, sql.ErrNoRows)
+
+	mockBrand := mock.NewMockBrandRepo(ctrl)
+	mockBrand.EXPECT().GetByID(ctx, int64(1)).Return(brandModel, nil)
+
+	tests := []struct {
+		name     string
+		fields   fields
+		args     args
+		wantResp DefaultResponse
+		wantErr  bool
+	}{
+		{
+			name: "Test_service_GetProductByID positif case",
+			fields: fields{
+				repo: &repository.Repository{
+					BrandRepo:   mockBrand,
+					ProductRepo: mockProduct,
+				},
+			},
+			args: args{
+				ctx: ctx,
+				id:  1,
+			},
+			wantResp: DefaultResponse{
+				Message: success,
+				Data:    productModel,
+			},
+			wantErr: false,
+		},
+
+		{
+			name: "Test_service_GetProductByID error product no rows",
+			fields: fields{
+				repo: &repository.Repository{
+					BrandRepo:   mockBrand,
+					ProductRepo: mockProduct,
+				},
+			},
+			args: args{
+				ctx: ctx,
+				id:  1,
+			},
+			wantResp: DefaultResponse{},
+			wantErr:  true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &service{
+				repo: tt.fields.repo,
+			}
+			gotResp, err := s.GetProductByID(tt.args.ctx, tt.args.id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("service.GetProductByID() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotResp, tt.wantResp) {
+				t.Errorf("service.GetProductByID() = %v, want %v", gotResp, tt.wantResp)
+			}
+		})
+	}
+}
