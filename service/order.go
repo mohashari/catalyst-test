@@ -94,3 +94,55 @@ func (s *service) CreateOrder(ctx context.Context, req OrderRequest) (resp Defau
 		Data:    id,
 	}, nil
 }
+
+func (s *service) GetOrderDetailByID(ctx context.Context, id int64) (resp DefaultResponse, err error) {
+	if id <= 0 {
+		err = fmt.Errorf("id required")
+		log.Println("level: ", "err ", "method: ", "validation get order by id ", "message: ", err.Error())
+		return resp, err
+	}
+	order, err := s.repo.OrderRepo.GetByID(ctx, id)
+	if err != nil {
+		log.Println("level: ", "err ", "method: ", "get order by id ", "message: ", err.Error())
+		return resp, fmt.Errorf("failed to get order")
+	}
+
+	customer, err := s.repo.CustomerRepo.GetByID(ctx, order.Customer.ID)
+	if err != nil {
+		log.Println("level: ", "err ", "method: ", "get customer ", "message: ", err.Error())
+		return resp, fmt.Errorf("failed get customer")
+	}
+
+	orderDetails, err := s.repo.OrderDetailRepo.GetDetailByOrderID(ctx, order.ID)
+	if err != nil {
+		log.Println("level: ", "err ", "method: ", "get order detail ", "message: ", err.Error())
+		return resp, fmt.Errorf("failed get order detail")
+	}
+
+	var details []model.OrderDetail
+
+	for _, orderDetail := range orderDetails {
+		product, err := s.repo.ProductRepo.GetByID(ctx, orderDetail.Product.ID)
+		if err != nil {
+			log.Println("level: ", "err ", "method: ", "get product ", "message: ", err.Error())
+			return resp, fmt.Errorf("failed get product")
+		}
+
+		brand, err := s.repo.BrandRepo.GetByID(ctx, product.Brand.ID)
+		if err != nil {
+			log.Println("level: ", "err ", "method: ", "get brand by id ", "message: ", err.Error())
+			return resp, err
+		}
+		product.Brand = brand
+		orderDetail.Product = product
+		details = append(details, orderDetail)
+	}
+
+	order.Customer = customer
+	order.OrderDetails = details
+
+	return DefaultResponse{
+		Message: success,
+		Data:    order,
+	}, nil
+}

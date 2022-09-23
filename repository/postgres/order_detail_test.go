@@ -102,6 +102,7 @@ func Test_orderDetail_GetDetailByOrderID(t *testing.T) {
 		ctx context.Context
 		id  int64
 	}
+	var orderDetails []model.OrderDetail
 	var orderDetailModel model.OrderDetail
 	db, dbmock, _ := sqlmock.New()
 	query := `select id,order_id,product_id,amount,quantity from order_detail where order_id = $1`
@@ -124,7 +125,7 @@ func Test_orderDetail_GetDetailByOrderID(t *testing.T) {
 		name      string
 		fields    fields
 		args      args
-		wantOrder model.OrderDetail
+		wantOrder []model.OrderDetail
 		wantErr   bool
 	}{
 		{
@@ -136,8 +137,10 @@ func Test_orderDetail_GetDetailByOrderID(t *testing.T) {
 				ctx: context.Background(),
 				id:  1,
 			},
-			wantOrder: orderDetailModel,
-			wantErr:   false,
+			wantOrder: []model.OrderDetail{
+				orderDetailModel,
+			},
+			wantErr: false,
 		},
 
 		{
@@ -149,7 +152,7 @@ func Test_orderDetail_GetDetailByOrderID(t *testing.T) {
 				ctx: context.Background(),
 				id:  1,
 			},
-			wantOrder: model.OrderDetail{},
+			wantOrder: orderDetails,
 			wantErr:   true,
 		},
 	}

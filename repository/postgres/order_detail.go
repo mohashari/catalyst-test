@@ -31,7 +31,7 @@ func (o *orderDetail) Insert(ctx context.Context, orderDetail model.OrderDetail)
 	return nil
 }
 
-func (o *orderDetail) GetDetailByOrderID(ctx context.Context, id int64) (order model.OrderDetail, err error) {
+func (o *orderDetail) GetDetailByOrderID(ctx context.Context, id int64) (orderDetail []model.OrderDetail, err error) {
 
 	o.mu.Lock()
 	defer o.mu.Unlock()
@@ -39,11 +39,12 @@ func (o *orderDetail) GetDetailByOrderID(ctx context.Context, id int64) (order m
 	query := `select id,order_id,product_id,amount,quantity from order_detail where order_id = $1`
 	rows, err := o.db.QueryContext(ctx, query, id)
 	if err != nil {
-		return order, err
+		return orderDetail, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
+		var order model.OrderDetail
 		if err := rows.Scan(
 			&order.ID,
 			&order.OrderID,
@@ -51,9 +52,10 @@ func (o *orderDetail) GetDetailByOrderID(ctx context.Context, id int64) (order m
 			&order.Amount,
 			&order.Quantity,
 		); err != nil {
-			return order, err
+			return orderDetail, err
 		}
+		orderDetail = append(orderDetail, order)
 	}
 
-	return order, nil
+	return orderDetail, nil
 }

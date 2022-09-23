@@ -165,3 +165,159 @@ func Test_service_CreateOrder(t *testing.T) {
 		})
 	}
 }
+
+func TestOrderProduct_calculateAmount(t *testing.T) {
+	type fields struct {
+		ProductID int64
+		Quantity  int
+	}
+	type args struct {
+		amount float64
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   float64
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			o := &OrderProduct{
+				ProductID: tt.fields.ProductID,
+				Quantity:  tt.fields.Quantity,
+			}
+			if got := o.calculateAmount(tt.args.amount); got != tt.want {
+				t.Errorf("OrderProduct.calculateAmount() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestOrderRequest_Valid(t *testing.T) {
+	type fields struct {
+		CustomerID    int64
+		OrderProducts []OrderProduct
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			o := &OrderRequest{
+				CustomerID:    tt.fields.CustomerID,
+				OrderProducts: tt.fields.OrderProducts,
+			}
+			if err := o.Valid(); (err != nil) != tt.wantErr {
+				t.Errorf("OrderRequest.Valid() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func Test_service_GetOrderDetailByID(t *testing.T) {
+	type fields struct {
+		repo *repository.Repository
+	}
+	type args struct {
+		ctx context.Context
+		id  int64
+	}
+
+	ctx := context.Background()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	var orderDetails []model.OrderDetail
+
+	customerModel := model.Customer{
+		ID: 1,
+	}
+	brand := model.Brand{
+		ID: 1,
+	}
+
+	product := model.Product{
+		ID:    1,
+		Brand: brand,
+	}
+
+	orderDetails = append(orderDetails, model.OrderDetail{
+		Product: product,
+	})
+	ordermodel := model.Order{
+		ID:           1,
+		Customer:     customerModel,
+		OrderDetails: orderDetails,
+	}
+
+	orderMock := mock.NewMockOrderRepo(ctrl)
+	orderMock.EXPECT().GetByID(ctx, int64(1)).Return(ordermodel, nil)
+
+	customerMock := mock.NewMockCustomerRepo(ctrl)
+	customerMock.EXPECT().GetByID(ctx, int64(1)).Return(customerModel, nil)
+
+	orderDetailMock := mock.NewMockOrderDetailRepo(ctrl)
+	orderDetailMock.EXPECT().GetDetailByOrderID(ctx, int64(1)).Return(orderDetails, nil)
+
+	productMock := mock.NewMockProductRepo(ctrl)
+	productMock.EXPECT().GetByID(ctx, int64(1)).Return(product, nil)
+
+	brandMock := mock.NewMockBrandRepo(ctrl)
+	brandMock.EXPECT().GetByID(ctx, int64(1)).Return(brand, nil)
+
+	tests := []struct {
+		name     string
+		fields   fields
+		args     args
+		wantResp DefaultResponse
+		wantErr  bool
+	}{
+		{
+			name: "Test_service_GetOrderDetailByID",
+			fields: fields{
+				repo: &repository.Repository{
+					CustomerRepo:    customerMock,
+					OrderRepo:       orderMock,
+					BrandRepo:       brandMock,
+					ProductRepo:     productMock,
+					OrderDetailRepo: orderDetailMock,
+				},
+			},
+			args: args{
+				ctx: ctx,
+				id:  1,
+			},
+			wantResp: DefaultResponse{
+				Message: success,
+				Data: model.Order{
+					ID: 1,
+					Customer: model.Customer{
+						ID: 1,
+					},
+					OrderDetails: orderDetails,
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &service{
+				repo: tt.fields.repo,
+			}
+			gotResp, err := s.GetOrderDetailByID(tt.args.ctx, tt.args.id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("service.GetOrderDetailByID() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotResp, tt.wantResp) {
+				t.Errorf("service.GetOrderDetailByID() = %v, want %v", gotResp, tt.wantResp)
+			}
+		})
+	}
+}

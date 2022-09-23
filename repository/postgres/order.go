@@ -61,7 +61,7 @@ func (o *order) GetByID(ctx context.Context, id int64) (order model.Order, err e
 	o.mu.Lock()
 	defer o.mu.Unlock()
 
-	query := `select id,customer_id,order_date,created_at,amount from order where id = $1`
+	query := `select id,customer_id,order_date,create_at,amount from orders where id = $1`
 	if err := o.db.QueryRowContext(ctx, query, id).Scan(
 		&order.ID,
 		&order.Customer.ID,

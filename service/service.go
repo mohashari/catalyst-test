@@ -21,6 +21,7 @@ type Service interface {
 	GetProductByID(ctx context.Context, id int64) (resp DefaultResponse, err error)
 	GetProductByBrandID(ctx context.Context, id int64) (resp DefaultResponse, err error)
 	CreateOrder(ctx context.Context, req OrderRequest) (resp DefaultResponse, err error)
+	GetOrderDetailByID(ctx context.Context, id int64) (resp DefaultResponse, err error)
 }
 
 //NewService ...

@@ -127,10 +127,10 @@ func (m *MockOrderDetailRepo) EXPECT() *MockOrderDetailRepoMockRecorder {
 }
 
 // GetDetailByOrderID mocks base method.
-func (m *MockOrderDetailRepo) GetDetailByOrderID(ctx context.Context, id int64) (model.OrderDetail, error) {
+func (m *MockOrderDetailRepo) GetDetailByOrderID(ctx context.Context, id int64) ([]model.OrderDetail, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetDetailByOrderID", ctx, id)
-	ret0, _ := ret[0].(model.OrderDetail)
+	ret0, _ := ret[0].([]model.OrderDetail)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

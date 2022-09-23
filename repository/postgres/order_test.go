@@ -112,7 +112,7 @@ func Test_order_GetByID(t *testing.T) {
 		ctx context.Context
 		id  int64
 	}
-	query := `select id,customer_id,order_date,created_at,amount from order where id = $1`
+	query := `select id,customer_id,order_date,create_at,amount from orders where id = $1`
 
 	orderModel := model.Order{}
 	db, dbmock, _ := sqlmock.New()
