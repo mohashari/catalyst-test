@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/mohashari/catalyst-test/service"
 )
@@ -99,6 +100,58 @@ func Router(ctx context.Context, r *http.ServeMux, svc service.Service) *http.Se
 			id, _ := strconv.Atoi(productID[0])
 
 			resp, err := svc.GetProductByID(ctx, int64(id))
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				json.NewEncoder(w).Encode(ErrorResp{Message: err.Error()})
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(resp)
+			return
+		}
+	})
+
+	r.HandleFunc("/order", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		if r.Method == http.MethodPost {
+
+			reqBody, _ := ioutil.ReadAll(r.Body)
+			var req service.OrderRequest
+			if err := json.Unmarshal(reqBody, &req); err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				json.NewEncoder(w).Encode(ErrorResp{Message: err.Error()})
+				return
+			}
+
+			resp, err := svc.CreateOrder(ctx, req)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				json.NewEncoder(w).Encode(ErrorResp{Message: err.Error()})
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(resp)
+			return
+
+		}
+	})
+
+	r.HandleFunc("/order/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		if r.Method == http.MethodGet {
+			path := r.URL.Path
+			id := strings.TrimPrefix(path, "/order")
+			id  = strings.Replace(id,"/","",1)
+
+			if id == "" {
+				w.WriteHeader(http.StatusBadRequest)
+				json.NewEncoder(w).Encode(ErrorResp{Message: "id required"})
+				return
+			}
+
+			orderID, _ := strconv.Atoi(id)
+
+			resp, err := svc.GetOrderDetailByID(ctx, int64(orderID))
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
 				json.NewEncoder(w).Encode(ErrorResp{Message: err.Error()})

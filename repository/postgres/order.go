@@ -17,7 +17,7 @@ func (o *order) Insert(ctx context.Context, order model.Order) (id int64, err er
 	o.mu.Lock()
 	defer o.mu.Unlock()
 
-	query := `insert into order (customer_id,order_date,created_at,amount) values($1,$2,$3,$4) returning id`
+	query := `insert into orders (customer_id,order_date,create_at,amount) values($1,$2,$3,$4) returning id`
 	queryOrderDetail := `insert into order_detail (order_id,product_id,amount,quantity) values ($1,$2,$3,$4)`
 
 	tx, err := o.db.BeginTx(ctx, &sql.TxOptions{})
@@ -25,7 +25,20 @@ func (o *order) Insert(ctx context.Context, order model.Order) (id int64, err er
 		return id, err
 	}
 
+	if err := tx.QueryRowContext(
+		ctx,
+		query,
+		order.Customer.ID,
+		order.OrderDate,
+		order.CreatedAt,
+		order.Amount).Scan(&id); err != nil {
+		tx.Rollback()
+		return id, err
+	}
+
 	for _, orderDetail := range order.OrderDetails {
+
+		orderDetail.OrderID = id
 		_, err = tx.ExecContext(
 			ctx,
 			queryOrderDetail,
@@ -40,16 +53,6 @@ func (o *order) Insert(ctx context.Context, order model.Order) (id int64, err er
 		}
 	}
 
-	if err := tx.QueryRowContext(
-		ctx,
-		query,
-		order.Customer.ID,
-		order.OrderDate,
-		order.CreatedAt,
-		order.Amount).Scan(&id); err != nil {
-		tx.Rollback()
-		return id, err
-	}
 	tx.Commit()
 	return id, nil
 }
@@ -58,7 +61,7 @@ func (o *order) GetByID(ctx context.Context, id int64) (order model.Order, err e
 	o.mu.Lock()
 	defer o.mu.Unlock()
 
-	query := `select id,customer_id,order_date,created_at,amount from order where id = $1`
+	query := `select id,customer_id,order_date,create_at,amount from orders where id = $1`
 	if err := o.db.QueryRowContext(ctx, query, id).Scan(
 		&order.ID,
 		&order.Customer.ID,

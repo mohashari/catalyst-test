@@ -31,7 +31,7 @@ type CustomerRepo interface {
 //OrderDetailRepo ...
 type OrderDetailRepo interface {
 	Insert(ctx context.Context, orderDetail model.OrderDetail) (err error)
-	GetDetailByOrderID(ctx context.Context, id int64) (orderDetail model.OrderDetail, err error)
+	GetDetailByOrderID(ctx context.Context, id int64) (orderDetail []model.OrderDetail, err error)
 }
 
 //OrderRepo ...

@@ -88,6 +88,21 @@ func (m *MockCustomerRepo) EXPECT() *MockCustomerRepoMockRecorder {
 	return m.recorder
 }
 
+// GetByID mocks base method.
+func (m *MockCustomerRepo) GetByID(ctx context.Context, id int64) (model.Customer, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByID", ctx, id)
+	ret0, _ := ret[0].(model.Customer)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByID indicates an expected call of GetByID.
+func (mr *MockCustomerRepoMockRecorder) GetByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockCustomerRepo)(nil).GetByID), ctx, id)
+}
+
 // MockOrderDetailRepo is a mock of OrderDetailRepo interface.
 type MockOrderDetailRepo struct {
 	ctrl     *gomock.Controller
@@ -111,6 +126,35 @@ func (m *MockOrderDetailRepo) EXPECT() *MockOrderDetailRepoMockRecorder {
 	return m.recorder
 }
 
+// GetDetailByOrderID mocks base method.
+func (m *MockOrderDetailRepo) GetDetailByOrderID(ctx context.Context, id int64) ([]model.OrderDetail, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDetailByOrderID", ctx, id)
+	ret0, _ := ret[0].([]model.OrderDetail)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDetailByOrderID indicates an expected call of GetDetailByOrderID.
+func (mr *MockOrderDetailRepoMockRecorder) GetDetailByOrderID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDetailByOrderID", reflect.TypeOf((*MockOrderDetailRepo)(nil).GetDetailByOrderID), ctx, id)
+}
+
+// Insert mocks base method.
+func (m *MockOrderDetailRepo) Insert(ctx context.Context, orderDetail model.OrderDetail) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Insert", ctx, orderDetail)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Insert indicates an expected call of Insert.
+func (mr *MockOrderDetailRepoMockRecorder) Insert(ctx, orderDetail interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockOrderDetailRepo)(nil).Insert), ctx, orderDetail)
+}
+
 // MockOrderRepo is a mock of OrderRepo interface.
 type MockOrderRepo struct {
 	ctrl     *gomock.Controller
@@ -132,6 +176,36 @@ func NewMockOrderRepo(ctrl *gomock.Controller) *MockOrderRepo {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockOrderRepo) EXPECT() *MockOrderRepoMockRecorder {
 	return m.recorder
+}
+
+// GetByID mocks base method.
+func (m *MockOrderRepo) GetByID(ctx context.Context, id int64) (model.Order, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByID", ctx, id)
+	ret0, _ := ret[0].(model.Order)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByID indicates an expected call of GetByID.
+func (mr *MockOrderRepoMockRecorder) GetByID(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockOrderRepo)(nil).GetByID), ctx, id)
+}
+
+// Insert mocks base method.
+func (m *MockOrderRepo) Insert(ctx context.Context, order model.Order) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Insert", ctx, order)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Insert indicates an expected call of Insert.
+func (mr *MockOrderRepoMockRecorder) Insert(ctx, order interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockOrderRepo)(nil).Insert), ctx, order)
 }
 
 // MockProductRepo is a mock of ProductRepo interface.

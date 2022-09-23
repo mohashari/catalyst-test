@@ -45,15 +45,9 @@ func Test_order_Insert(t *testing.T) {
 
 	db, dbmock, _ := sqlmock.New()
 	queryOrderDetail := `insert into order_detail (order_id,product_id,amount,quantity) values ($1,$2,$3,$4)`
-	query := `insert into order (customer_id,order_date,created_at,amount) values($1,$2,$3,$4) returning id`
+	query := `insert into orders (customer_id,order_date,create_at,amount) values($1,$2,$3,$4) returning id`
 
 	dbmock.ExpectBegin()
-	dbmock.ExpectExec(regexp.QuoteMeta(queryOrderDetail)).
-		WithArgs(orderDetailModel.OrderID,
-			orderDetailModel.Product.ID,
-			orderDetailModel.Amount,
-			orderDetailModel.Quantity).
-		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	dbmock.ExpectQuery(regexp.QuoteMeta(query)).
 		WithArgs(
@@ -62,6 +56,13 @@ func Test_order_Insert(t *testing.T) {
 			orderModel.CreatedAt,
 			orderModel.Amount).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(int64(1)))
+
+	dbmock.ExpectExec(regexp.QuoteMeta(queryOrderDetail)).
+		WithArgs(orderDetailModel.OrderID,
+			orderDetailModel.Product.ID,
+			orderDetailModel.Amount,
+			orderDetailModel.Quantity).
+		WillReturnResult(sqlmock.NewResult(1, 1))
 	dbmock.ExpectCommit()
 
 	tests := []struct {
@@ -111,7 +112,7 @@ func Test_order_GetByID(t *testing.T) {
 		ctx context.Context
 		id  int64
 	}
-	query := `select id,customer_id,order_date,created_at,amount from order where id = $1`
+	query := `select id,customer_id,order_date,create_at,amount from orders where id = $1`
 
 	orderModel := model.Order{}
 	db, dbmock, _ := sqlmock.New()
