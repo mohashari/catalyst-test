@@ -25,14 +25,19 @@ type BrandRepo interface {
 
 //CustomerRepo ...
 type CustomerRepo interface {
+	GetByID(ctx context.Context, id int64) (customer model.Customer, err error)
 }
 
 //OrderDetailRepo ...
 type OrderDetailRepo interface {
+	Insert(ctx context.Context, orderDetail model.OrderDetail) (err error)
+	GetDetailByOrderID(ctx context.Context, id int64) (orderDetail model.OrderDetail, err error)
 }
 
 //OrderRepo ...
 type OrderRepo interface {
+	Insert(ctx context.Context, order model.Order) (id int64, err error)
+	GetByID(ctx context.Context, id int64) (order model.Order, err error)
 }
 
 //ProductRepo ...

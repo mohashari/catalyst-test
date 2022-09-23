@@ -47,6 +47,15 @@ func NewPostgres(p *ConnParam) (*repository.Repository, error) {
 		ProductRepo: &product{
 			db: db,
 		},
+		CustomerRepo: &customer{
+			db: db,
+		},
+		OrderRepo: &order{
+			db: db,
+		},
+		OrderDetailRepo: &orderDetail{
+			db: db,
+		},
 	}, nil
 }
 
